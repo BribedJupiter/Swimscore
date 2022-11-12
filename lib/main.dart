@@ -1,5 +1,21 @@
 import 'package:flutter/material.dart';
 
+var defaultEventData = <EventData>[
+  EventData(200, 'Medley Relay', 8, true),
+  EventData(200, 'Free', 8, false),
+  EventData(200, 'IM', 8, false),
+  EventData(50, 'Free', 8, false),
+  EventData(100, 'Fly', 8, false),
+  EventData(100, 'Free', 8, false),
+  EventData(500, 'Free', 8, false),
+  EventData(200, 'Free Relay', 8, true),
+  EventData(100, 'Back', 8, false),
+  EventData(100, 'Breast', 8, false),
+  EventData(400, 'Free Relay', 8, true)
+];
+List<EventData> eventDataList = [];
+bool useDefaults = true;
+
 void main() {
   runApp(const MyApp());
 }
@@ -10,6 +26,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    if (useDefaults) {
+      eventDataList = defaultEventData;
+    }
     return MaterialApp(
       title: 'Swimscore',
       theme: ThemeData(
@@ -24,15 +43,15 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(
+      home: const EventPage(
           title: 'Swimscore'
       ),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class EventPage extends StatefulWidget {
+  const EventPage({super.key, required this.title});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -46,10 +65,10 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<EventPage> createState() => _EventState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _EventState extends State<EventPage> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
@@ -79,10 +98,15 @@ class _MyHomePageState extends State<MyHomePage> {
         child: EventList(title: 'Events',),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
               icon: Icon(Icons.home),
               label: 'Events',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people_alt),
+            label: 'Teams',
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.settings),
@@ -111,6 +135,7 @@ class EventList extends StatefulWidget {
 }
 
 class _EventListState extends State<EventList> {
+  int items = eventDataList.length;
   void _eventPressed() {
     setState(() {
 
@@ -120,11 +145,11 @@ class _EventListState extends State<EventList> {
   Widget build(BuildContext context) {
     return ListView.builder(
         padding: const EdgeInsets.all(30),
-        itemCount: 10,
+        itemCount: items,
         itemBuilder: (context, i) {
           return ElevatedButton(
               onPressed: _eventPressed,
-              child: const Text("Event"),
+              child: Text(eventDataList[i].distance.toString() + " " + eventDataList[i].name),
           );
         }
     );
@@ -142,7 +167,7 @@ class EventData
   List<int> placesValues = []; // The point value of each placement i.e. 6, 5, 4, 3, 2, 1
 
   EventData(this.distance, this.name, this.places, this.isRelay) {
-    placeTeams.length = places;
-    placesValues.length = places;
+    //placeTeams.length = places;
+    //placesValues.length = places;
   }
 }
