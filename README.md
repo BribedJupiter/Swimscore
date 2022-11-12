@@ -1,16 +1,2 @@
-# swim_score
-
-Calculate the score of a swim meet
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+#Swimscore
+High school swim meets in the USA are boring! They don't tell you the score until after the meet is over, depriving fans of the tension and excitement they hunger for! This app aims to change that. It is being developed in Unity 2021.3.6f1 for Android at the moment and iOS at some point in the near future.
