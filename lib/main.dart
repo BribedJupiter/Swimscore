@@ -153,9 +153,22 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+
+  void onPressed() {
+    for (EventData ed in eventDataList) {
+      ed.placeTeams = List.filled (8, TeamData('None'), growable: true);
+    }
+    for (TeamData td in teamList) {
+      td.score = 0;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Text("Settings");
+    return ElevatedButton(
+        onPressed: onPressed,
+        child: Text("Clear All")
+    );
   }
 }
 
@@ -169,7 +182,29 @@ class Teams extends StatefulWidget {
 class _TeamsState extends State<Teams> {
   @override
   Widget build(BuildContext context) {
-    return Text("Teams");
+    return ListView.builder(
+        padding: EdgeInsets.all(30),
+        itemCount: teamList.length,
+        itemBuilder: (context, i) {
+          return Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 300,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    border: Border.all(width: 1.5, color: Colors.blueGrey),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Text(teamList[i].name + ": " + teamList[i].score.toString(), style: TextStyle(color: Colors.white, fontSize: 36), textAlign: TextAlign.center,),
+                )
+              ],
+            ),
+          );
+        }
+    );
   }
 }
 
@@ -269,6 +304,7 @@ class _PlaceListState extends State<PlaceList> {
 
   void onTeamPressed(int placeIndex, int teamIndex) {
     currentEventData.placeTeams[placeIndex-1] = teamList[teamIndex];
+    teamList[teamIndex].score += currentEventData.placesValues[placeIndex-1];
     Navigator .of(context, rootNavigator: true).pop();
     setState(() {});
   }
@@ -315,7 +351,7 @@ class EventData {
   int places = 8;
   bool isRelay = false;
   List<TeamData> placeTeams = List.filled (8, TeamData('None'), growable: true); // The order of the list is the order of the teams that score i.e. Kirkwood, Kirkwood, Webster, Ladue... TODO: Set list length to variable
-  List<int> placesValues = []; // The point value of each placement i.e. 6, 5, 4, 3, 2, 1
+  List<int> placesValues = [8, 7, 6, 5, 4, 3, 2, 1]; // The point value of each placement i.e. 6, 5, 4, 3, 2, 1
 
   EventData(this.distance, this.name, this.places, this.isRelay);
 }
