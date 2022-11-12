@@ -5,6 +5,7 @@ var defaultEventData = <EventData>[
   EventData(200, 'Free', 8, false),
   EventData(200, 'IM', 8, false),
   EventData(50, 'Free', 8, false),
+  EventData(0, 'Diving', 8, false),
   EventData(100, 'Fly', 8, false),
   EventData(100, 'Free', 8, false),
   EventData(500, 'Free', 8, false),
@@ -13,7 +14,12 @@ var defaultEventData = <EventData>[
   EventData(100, 'Breast', 8, false),
   EventData(400, 'Free Relay', 8, true)
 ];
+var defaultTeamList = <TeamData>[
+  TeamData("Home"),
+  TeamData("Away")
+];
 List<EventData> eventDataList = [];
+List<TeamData> teamList = [];
 bool useDefaults = true;
 
 void main() {
@@ -28,6 +34,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     if (useDefaults) {
       eventDataList = defaultEventData;
+      teamList = defaultTeamList;
     }
     return MaterialApp(
       title: 'Swimscore',
@@ -137,9 +144,10 @@ class EventList extends StatefulWidget {
 class _EventListState extends State<EventList> {
   int items = eventDataList.length;
   void _eventPressed() {
-    setState(() {
+    /*setState(() {
 
-    });
+    });*/
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const PlaceList()));
   }
   @override
   Widget build(BuildContext context) {
@@ -156,8 +164,29 @@ class _EventListState extends State<EventList> {
   }
 }
 
-class EventData
-{
+class PlaceList extends StatelessWidget {
+  const PlaceList({super.key});
+
+  @override
+  Widget build (BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Places'), //TODO: Make it display event and distance data
+      ),
+      body: Center(
+        child: ListView.builder(
+          padding: const EdgeInsets.all(30),
+          itemCount: 8, //TODO: Make dynamic with events
+          itemBuilder: (context, i) {
+            return Text("Placeholder");
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class EventData {
   // Designed to hold all the data for each individual event, and to be accessible by everything that needs it
   int distance = -1;
   String name = 'none';
@@ -170,4 +199,12 @@ class EventData
     //placeTeams.length = places;
     //placesValues.length = places;
   }
+}
+
+class TeamData {
+  // Designed to hold all the data for each individual team
+  String name = 'none';
+  int score = 0;
+
+  TeamData(this.name);
 }
