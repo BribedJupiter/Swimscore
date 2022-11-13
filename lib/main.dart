@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { //TODO: Upon first load teams show up twice
     if (g.useDefaults) {
       for (EventData ed in g.defaultEventData) {
         g.eventDataList.add(ed);
@@ -140,10 +140,12 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
 
   final settingsTextController = TextEditingController();
+  final settingsTextControllerTwo = TextEditingController();
 
   @override
   void dispose() {
     settingsTextController.dispose();
+    settingsTextControllerTwo.dispose();
     super.dispose();
   }
 
@@ -243,7 +245,89 @@ class _SettingsState extends State<Settings> {
   }
 
   void onEditEvents(int addEditRemove) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          if (addEditRemove == 1) {
+            return AlertDialog(
+              title: const Text("Add Event", textAlign: TextAlign.center,),
+              content: Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextFormField(
+                      controller: settingsTextController,
+                      decoration: const InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: "Enter a stroke"
+                      ),
+                    ),
+                    TextFormField(
+                      controller: settingsTextControllerTwo,
+                      decoration: const InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: "Enter a distance (no units)"
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator .of(context).pop();
+                    },
+                    child: Text("Cancel")
+                ),
+                TextButton(
+                    onPressed: () {
+                      bool found = false;
+                      for (EventData ed in g.eventDataList) {
+                        if ((ed.name.toLowerCase() == settingsTextController.text.toLowerCase()) && (int.parse(settingsTextControllerTwo.text) == ed.distance)) { //TODO: Check for parseint errors
+                          found = true;
+                        }
+                      }
+                      if (settingsTextController.text.isNotEmpty && settingsTextControllerTwo.text.isNotEmpty && !found) { //TODO: Check for duplicates
+                        g.eventDataList.add(EventData(int.parse(settingsTextControllerTwo.text), settingsTextController.text, 8, false)); //TODO: Implement place & relay
+                        Navigator .of(context).pop();
+                      } else {
+                        Navigator .of(context).pop();
+                        wariningAlert("Event add failed. Must enter both a stroke and distance. Duplicates are not allowed.");
+                      }
+                    },
+                    child: Text("Submit")
+                ),
+              ],
+            );
+          }
+          else if (addEditRemove == 2) {
+            return AlertDialog();
+          }
+          else {
+            return AlertDialog();
+          }
+        });
+  }
 
+  void wariningAlert(String text) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Error"),
+            content: Text(text),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator .of(context).pop();
+                  },
+                  child: Text("Dismiss", textAlign: TextAlign.center)
+              )
+            ],
+          );
+        });
   }
 
   void onEditTeams(int addEditRemove) {
@@ -252,7 +336,7 @@ class _SettingsState extends State<Settings> {
         builder: (BuildContext context) {
           if (addEditRemove == 1) {
             return AlertDialog(
-                title: Text("Add Team", textAlign: TextAlign.center),
+                title: const Text("Add Team", textAlign: TextAlign.center),
                 content: TextFormField(
                       controller: settingsTextController,
                       decoration: const InputDecoration(
@@ -270,7 +354,26 @@ class _SettingsState extends State<Settings> {
                       TextButton(
                           onPressed: () {
                             Navigator .of(context).pop();
-                            g.teamList.add(TeamData(settingsTextController.text));
+                            if (settingsTextController.text.isEmpty) {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text("Error"),
+                                      content: Text("Team add failed. Must enter a team name."),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              Navigator .of(context).pop();
+                                            },
+                                            child: Text("Dismiss", textAlign: TextAlign.center)
+                                        )
+                                      ],
+                                    );
+                                  });
+                            } else {
+                              g.teamList.add(TeamData(settingsTextController.text));
+                            }
                           },
                           child: const Text("Submit")
                       )
@@ -279,12 +382,122 @@ class _SettingsState extends State<Settings> {
           }
           else if (addEditRemove == 2) {
             return AlertDialog(
-                title: Text("Edit Team", textAlign: TextAlign.center,)
+                title: const Text("Edit Team", textAlign: TextAlign.center,),
+                content: Container(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                    TextFormField(
+                      controller: settingsTextController,
+                      decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: "Enter the team name you'd like to change"
+                      ),
+                    ),
+                    TextFormField(
+                      controller: settingsTextControllerTwo,
+                      decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: "Enter the new team name"
+                      )
+                    )
+                  ]
+                  )
+                ),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator .of(context).pop();
+                      },
+                      child: Text("Cancel")
+                  ),
+                  TextButton(
+                      onPressed: () {
+                        bool worked = false;
+                        for (TeamData td in g.teamList) {
+                          if (td.name.toLowerCase() == settingsTextController.text.toLowerCase()) {
+                            td.name = settingsTextControllerTwo.text;
+                            worked = true;
+                          }
+                        }
+                        Navigator .of(context).pop();
+                        if (!worked) {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                    title: Text("Error"),
+                                    content: Text("Team name change failed. Could not find team."),
+                                    actions: [
+                                      TextButton(
+                                          onPressed: () {
+                                            Navigator .of(context).pop();
+                                          },
+                                          child: Text("Dismiss", textAlign: TextAlign.center)
+                                      )
+                                    ],
+                                );
+                              });
+                        }
+                      },
+                      child: Text("Submit")
+                  ),
+                ],
             );
           }
           else {
             return AlertDialog(
-                title: Text("Remove Team", textAlign: TextAlign.center,)
+                title: Text("Remove Team", textAlign: TextAlign.center,),
+                content: TextFormField(
+                  controller: settingsTextController,
+                    decoration: const InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: "Enter the team to remove"
+                    )
+                ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator .of(context).pop();
+                    },
+                    child: const Text("Cancel")
+                ),
+                TextButton(
+                    onPressed: () {
+                      bool found = false;
+                      TeamData? toRemove;
+                      for (TeamData td in g.teamList) {
+                        if (td.name.toLowerCase() == settingsTextController.text.toLowerCase()) {
+                          toRemove = td;
+                          found = true;
+                        }
+                      }
+                      g.teamList.remove(toRemove);
+                      Navigator .of(context).pop();
+                      if (!found) {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text("Error"),
+                                content: Text("Team removal failed. Could not find team."),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () {
+                                        Navigator .of(context).pop();
+                                      },
+                                      child: Text("Dismiss", textAlign: TextAlign.center)
+                                  )
+                                ],
+                              );
+                            });
+                      }
+                    },
+                    child: const Text("Submit")
+                )
+              ],
             );
           }
         }
