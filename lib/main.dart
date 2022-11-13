@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+// ------DEFAULT VALUES---------
+
 var defaultEventData = <EventData>[
   EventData(200, 'Medley Relay', 8, true),
   EventData(200, 'Free', 8, false),
@@ -18,11 +20,14 @@ var defaultTeamList = <TeamData>[
   TeamData("Home"),
   TeamData("Away")
 ];
+var defaultScoringValues = <int>[8, 7, 6, 5, 4, 3, 2, 1];
 List<EventData> eventDataList = [];
 List<TeamData> teamList = [];
 bool useDefaults = true;
 
 EventData currentEventData = defaultEventData[0];
+
+// ------END DEFAULT VALUES---------
 
 void main() {
   runApp(const MyApp());
@@ -84,7 +89,7 @@ class EventPage extends StatefulWidget {
 
 class _EventState extends State<EventPage> {
   int _selectedIndex = 0;
-  final List<Widget> _children = [
+  final List<Widget> _children = const [
     EventList(title: "Events"),
     Teams(),
     Settings(),
@@ -154,7 +159,42 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
 
-  void onPressed() {
+  void onClearPressed() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Are you sure?"),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: const [
+                  Text("Are you sure you want to clear scoring data?"),
+                  Text("This will delete team placing and scoring data.")
+                ],
+              ),
+              ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator .of(context).pop();
+                  },
+                  child: const Text("Cancel")
+              ),
+              TextButton(
+                  onPressed: () {
+                    clearData();
+                    Navigator .of(context).pop();
+                  },
+                  child: const Text("Yes")
+              )
+            ],
+            );
+        }
+    );
+  }
+
+  void clearData() {
     for (EventData ed in eventDataList) {
       ed.placeTeams = List.filled (8, TeamData('None'), growable: true);
     }
@@ -163,11 +203,189 @@ class _SettingsState extends State<Settings> {
     }
   }
 
+  void onResetData() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Are you sure?"),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: const [
+                  Text("Are you sure you want to reset all data to their defaults?"),
+                  Text("This will delete custom teams and events. Scoring data will also be cleared.")
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator .of(context).pop();
+                  },
+                  child: const Text("Cancel")
+              ),
+              TextButton(
+                  onPressed: () {
+                    clearData();
+                    resetData();
+                    Navigator .of(context).pop();
+                  },
+                  child: const Text("Yes")
+              )
+            ],
+          );
+        }
+    );
+  }
+
+  void resetData() {
+    eventDataList = defaultEventData;
+    teamList = defaultTeamList;
+    for (EventData ed in eventDataList) {
+      ed.placesValues = defaultScoringValues;
+    }
+  }
+
+  void onEditEvents(int addEditRemove) {
+
+  }
+
+  void onEditTeams(int addEditRemove) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+
+          );
+        });
+  }
+
+  void showCredits() {
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Credits", textAlign: TextAlign.center,),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: const [
+                  Text("This app was made by Jack Bauer, but it is made possible by its users. Thank you!"),
+                  Text("If you have any suggestions, please direct them his way.")
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator .of(context).pop();
+                  },
+                  child: const Text("Thanks!")
+              ),
+            ],
+          );
+        }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-        onPressed: onPressed,
-        child: Text("Clear All")
+    return Center(
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.all(20),
+          children: [
+            Center(
+              child: ElevatedButton(
+                onPressed: onClearPressed,
+                child: const Text("Clear Scoring Data")
+              )
+            ),
+          Center(
+            child: ElevatedButton(
+                onPressed: onResetData,
+                child: const Text("Reset Defaults")
+            ),
+          ),
+          const Divider(
+            height: 20,
+            thickness: 1,
+            indent: 100,
+            endIndent: 100,
+            color: Colors.black,
+          ),
+            Center(
+              child: ElevatedButton(
+                  onPressed: () => onEditEvents(1),
+                  child: const Text("Add Event")
+              ),
+            ),
+            Center(
+              child: ElevatedButton(
+                  onPressed: () => onEditEvents(2),
+                  child: const Text("Edit Event")
+              ),
+            ),
+            Center(
+              child: ElevatedButton(
+                  onPressed: () => onEditEvents(3),
+                  child: const Text("Remove Event")
+              ),
+            ),
+          const Divider(
+            height: 20,
+            thickness: 1,
+            indent: 100,
+            endIndent: 100,
+            color: Colors.black,
+          ),
+            Center(
+              child: ElevatedButton(
+                  onPressed: () => onEditTeams(1),
+                  child: const Text("Add Team")
+              ),
+            ),
+            Center(
+              child: ElevatedButton(
+                  onPressed: () => onEditTeams(2),
+                  child: const Text("Edit Team")
+              ),
+            ),
+            Center(
+              child:
+                ElevatedButton(
+                    onPressed: () => onEditTeams(3),
+                    child: const Text("Remove Team")
+                ),
+            ),
+          const Divider(
+            height: 20,
+            thickness: 1,
+            indent: 100,
+            endIndent: 100,
+            color: Colors.black,
+          ),
+            Center(
+              child: ElevatedButton(
+                  onPressed: showCredits,
+                  child: const Text("Change Specific Event Scoring Rules")
+              ),
+            ),
+            Center(
+              child: ElevatedButton(
+                  onPressed: showCredits,
+                  child: const Text("Change Default Event Scoring Rules")
+              ),
+            ),
+            Center(
+              child: ElevatedButton(
+                  onPressed: showCredits,
+                  child: const Text("Credits") //TODO: Add dark mode
+              ),
+            ),
+          ],
+        ),
     );
   }
 }
@@ -183,24 +401,24 @@ class _TeamsState extends State<Teams> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        padding: EdgeInsets.all(30),
+        padding: const EdgeInsets.all(30),
         itemCount: teamList.length,
         itemBuilder: (context, i) {
-          return Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 300,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                    border: Border.all(width: 1.5, color: Colors.blueGrey),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Text(teamList[i].name + ": " + teamList[i].score.toString(), style: TextStyle(color: Colors.white, fontSize: 36), textAlign: TextAlign.center,),
-                )
-              ],
+          return Card(
+            color: Colors.blue,
+            child: SizedBox(
+              width: 60,
+              height: 40,
+              child: Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(teamList[i].name + ": ", style: TextStyle(color: Colors.white, fontSize: 24)),
+                    Text(teamList[i].score.toString(), style: TextStyle(color: Colors.white, fontSize: 24))
+                  ],
+                ),
+              ),
             ),
           );
         }
@@ -218,7 +436,7 @@ class Visualizer extends StatefulWidget {
 class _VisualizerState extends State<Visualizer> {
   @override
   Widget build(BuildContext context) {
-    return Text("Visualizer");
+    return const Text("Visualizer");
   }
 }
 
@@ -236,7 +454,7 @@ class _EventListState extends State<EventList> {
   int items = eventDataList.length;
   void _eventPressed(int i) {
     currentEventData = eventDataList[i];
-    Navigator.push(context, MaterialPageRoute(builder: (context) => PlaceList()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => const PlaceList()));
   }
   @override
   Widget build(BuildContext context) {
@@ -351,7 +569,7 @@ class EventData {
   int places = 8;
   bool isRelay = false;
   List<TeamData> placeTeams = List.filled (8, TeamData('None'), growable: true); // The order of the list is the order of the teams that score i.e. Kirkwood, Kirkwood, Webster, Ladue... TODO: Set list length to variable
-  List<int> placesValues = [8, 7, 6, 5, 4, 3, 2, 1]; // The point value of each placement i.e. 6, 5, 4, 3, 2, 1
+  List<int> placesValues = defaultScoringValues; // The point value of each placement i.e. 6, 5, 4, 3, 2, 1
 
   EventData(this.distance, this.name, this.places, this.isRelay);
 }
