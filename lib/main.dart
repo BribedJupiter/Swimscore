@@ -13,8 +13,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (g.useDefaults) {
-      g.eventDataList = g.defaultEventData;
-      g.teamList = g.defaultTeamList;
+      for (EventData ed in g.defaultEventData) {
+        g.eventDataList.add(ed);
+      }
+      for (TeamData td in g.defaultTeamList) {
+        g.teamList.add(td);
+      }
       for (EventData ed in g.eventDataList) {
         ed.placesValues = g.defaultScoringValues;
       }
@@ -198,7 +202,7 @@ class _SettingsState extends State<Settings> {
               child: ListBody(
                 children: const [
                   Text("Are you sure you want to reset teams and events to their defaults?"),
-                  Text("This will delete custom teams and events.")
+                  Text("This will delete custom teams and events. This will also delete all scoring data.")
                 ],
               ),
             ),
@@ -211,6 +215,7 @@ class _SettingsState extends State<Settings> {
               ),
               TextButton(
                   onPressed: () {
+                    clearData();
                     resetData();
                     Navigator .of(context).pop();
                   },
@@ -223,9 +228,11 @@ class _SettingsState extends State<Settings> {
   }
 
   void resetData() {
-    g.eventDataList = [];
+    g.eventDataList.clear();
+    print (g.eventDataList);
     g.eventDataList.addAll(g.defaultEventData);
-    g.teamList = [];
+    g.teamList.clear();
+    print (g.defaultTeamList);
     g.teamList.addAll(g.defaultTeamList);
     for (EventData ed in g.eventDataList) {
       ed.placesValues = g.defaultScoringValues;
