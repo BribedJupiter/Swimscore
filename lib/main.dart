@@ -1,33 +1,6 @@
 import 'package:flutter/material.dart';
-
-// DEFAULTS
-
-List<EventData> defaultEventData = [
-  EventData(200, 'Medley Relay', 8, true),
-  EventData(200, 'Free', 8, false),
-  EventData(200, 'IM', 8, false),
-  EventData(50, 'Free', 8, false),
-  EventData(0, 'Diving', 8, false),
-  EventData(100, 'Fly', 8, false),
-  EventData(100, 'Free', 8, false),
-  EventData(500, 'Free', 8, false),
-  EventData(200, 'Free Relay', 8, true),
-  EventData(100, 'Back', 8, false),
-  EventData(100, 'Breast', 8, false),
-  EventData(400, 'Free Relay', 8, true)
-];
-List<TeamData> defaultTeamList = [
-  TeamData("Home"),
-  TeamData("Away")
-];
-List<int> defaultScoringValues = [8, 7, 6, 5, 4, 3, 2, 1];
-List<EventData> eventDataList = [];
-List<TeamData> teamList = [];
-bool useDefaults = true;
-
-EventData currentEventData = defaultEventData[0];
-
-// END DEFAULTS
+import 'globals.dart' as g;
+import 'classes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -39,9 +12,12 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    if (useDefaults) {
-      eventDataList = defaultEventData;
-      teamList = defaultTeamList;
+    if (g.useDefaults) {
+      g.eventDataList = g.defaultEventData;
+      g.teamList = g.defaultTeamList;
+      for (EventData ed in g.eventDataList) {
+        ed.placesValues = g.defaultScoringValues;
+      }
     }
     return MaterialApp(
       title: 'Swimscore',
@@ -203,10 +179,10 @@ class _SettingsState extends State<Settings> {
   }
 
   void clearData() {
-    for (EventData ed in eventDataList) {
+    for (EventData ed in g.eventDataList) {
       ed.placeTeams = List.filled (8, TeamData('None'), growable: true);
     }
-    for (TeamData td in teamList) {
+    for (TeamData td in g.teamList) {
       td.score = 0;
     }
   }
@@ -248,27 +224,16 @@ class _SettingsState extends State<Settings> {
   }
 
   void resetData() {
-    print(eventDataList);
-    print(defaultEventData);
-    eventDataList.clear();
-    /*for (EventData ed in defaultEventData) {
-      eventDataList.add(ed);
-    }*/
-    eventDataList = [];
-    eventDataList.addAll(defaultEventData);
-    print(eventDataList);
-    print(teamList);
-    print(defaultTeamList);
-    teamList.clear();
-    /*for (TeamData td in defaultTeamList) {
-      teamList.add(td);
-    }*/
-    teamList = [];
-    teamList.addAll(defaultTeamList);
-    print(teamList);
-    for (EventData ed in eventDataList) {
-      ed.placesValues = defaultScoringValues;
+    g.eventDataList = [];
+    g.eventDataList.addAll(g.defaultEventData);
+    g.teamList = [];
+    g.teamList.addAll(g.defaultTeamList);
+    for (EventData ed in g.eventDataList) {
+      ed.placesValues = g.defaultScoringValues;
     }
+    setState(() {
+
+    });
   }
 
   void onEditEvents(int addEditRemove) {
@@ -299,7 +264,7 @@ class _SettingsState extends State<Settings> {
                       TextButton(
                           onPressed: () {
                             Navigator .of(context).pop();
-                            teamList.add(TeamData(settingsTextController.text));
+                            g.teamList.add(TeamData(settingsTextController.text));
                           },
                           child: const Text("Submit")
                       )
@@ -461,7 +426,7 @@ class _TeamsState extends State<Teams> {
   Widget build(BuildContext context) {
     return ListView.builder(
         padding: const EdgeInsets.all(30),
-        itemCount: teamList.length,
+        itemCount: g.teamList.length,
         itemBuilder: (context, i) {
           return Card(
             color: Colors.blue,
@@ -473,8 +438,8 @@ class _TeamsState extends State<Teams> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(teamList[i].name + ": ", style: TextStyle(color: Colors.white, fontSize: 24)),
-                    Text(teamList[i].score.toString(), style: TextStyle(color: Colors.white, fontSize: 24))
+                    Text(g.teamList[i].name + ": ", style: TextStyle(color: Colors.white, fontSize: 24)),
+                    Text(g.teamList[i].score.toString(), style: TextStyle(color: Colors.white, fontSize: 24))
                   ],
                 ),
               ),
@@ -510,9 +475,9 @@ class EventList extends StatefulWidget {
 
 class _EventListState extends State<EventList> {
   // Display the list of events
-  int items = eventDataList.length;
+  int items = g.eventDataList.length;
   void _eventPressed(int i) {
-    currentEventData = eventDataList[i];
+    g.currentEventData = g.eventDataList[i];
     Navigator.push(context, MaterialPageRoute(builder: (context) => const PlaceList()));
   }
   @override
@@ -523,7 +488,7 @@ class _EventListState extends State<EventList> {
         itemBuilder: (context, i) {
           return ElevatedButton(
               onPressed: () => _eventPressed(i),
-              child: Text(eventDataList[i].distance.toString() + " " + eventDataList[i].name),
+              child: Text(g.eventDataList[i].distance.toString() + " " + g.eventDataList[i].name),
           );
         }
     );
@@ -555,7 +520,7 @@ class _PlaceListState extends State<PlaceList> {
             ),
             child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: teamList.length+1,
+                itemCount: g.teamList.length+1,
                 itemBuilder: (context, i) {
                   if (i == 0) {
                     return DefaultTextStyle(
@@ -569,7 +534,7 @@ class _PlaceListState extends State<PlaceList> {
                   }
                   else {return ElevatedButton(
                       onPressed: () => onTeamPressed(index, i-1),
-                      child: Text(teamList[i-1].name),
+                      child: Text(g.teamList[i-1].name),
                   );}
                 }
             ),
@@ -580,13 +545,13 @@ class _PlaceListState extends State<PlaceList> {
   }
 
   void onTeamPressed(int placeIndex, int teamIndex) {
-    for (TeamData td in teamList) {
+    for (TeamData td in g.teamList) {
       print (td.name);
     }
     print ("Team index: " + teamIndex.toString());
     print ("Place index: " + placeIndex.toString());
-    currentEventData.placeTeams[placeIndex-1] = teamList[teamIndex];
-    teamList[teamIndex].score += currentEventData.placesValues[placeIndex-1];
+    g.currentEventData.placeTeams[placeIndex-1] = g.teamList[teamIndex];
+    g.teamList[teamIndex].score += g.currentEventData.placesValues[placeIndex-1];
     Navigator .of(context, rootNavigator: true).pop();
     setState(() {});
   }
@@ -595,15 +560,15 @@ class _PlaceListState extends State<PlaceList> {
   Widget build (BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(currentEventData.distance.toString() + " " + currentEventData.name),
+        title: Text(g.currentEventData.distance.toString() + " " + g.currentEventData.name),
       ),
       body: Center(
         child: ListView.builder(
           padding: const EdgeInsets.all(30),
-          itemCount: currentEventData.places,
+          itemCount: g.currentEventData.places,
           itemBuilder: (context, i) {
             ElevatedButton eb;
-            if (currentEventData.placeTeams[i].name == "None") {
+            if (g.currentEventData.placeTeams[i].name == "None") {
               eb = ElevatedButton(
                 //This is the list of places
                 onPressed: () => onPlacePressed(i + 1),
@@ -615,7 +580,7 @@ class _PlaceListState extends State<PlaceList> {
                 //This is the list of places
                   onPressed: () => onPlacePressed(i + 1),
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                  child: Text((i + 1).toString() + ": " + currentEventData.placeTeams[i].name),
+                  child: Text((i + 1).toString() + ": " + g.currentEventData.placeTeams[i].name),
               );
             }
             return eb;
@@ -624,25 +589,4 @@ class _PlaceListState extends State<PlaceList> {
       ),
     );
   }
-}
-
-class EventData {
-  // Designed to hold all the data for each individual event, and to be accessible by everything that needs it
-  int distance = -1;
-  String name = 'none';
-  int places = 8;
-  bool isRelay = false;
-  List<TeamData> placeTeams = List.filled (8, TeamData('None'), growable: true); // The order of the list is the order of the teams that score i.e. Kirkwood, Kirkwood, Webster, Ladue... TODO: Set list length to variable
-  List<int> placesValues = defaultScoringValues; // The point value of each placement i.e. 6, 5, 4, 3, 2, 1
-
-  EventData(this.distance, this.name, this.places, this.isRelay);
-}
-
-class TeamData {
-  // Designed to hold all the data for each individual team
-  String name = 'none';
-  int score = 0;
-  //TODO: Make it so you can pick a color for your team and when you click a place the button turns that color
-
-  TeamData(this.name);
 }
