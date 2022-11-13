@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-// ------DEFAULT VALUES---------
+// DEFAULTS
 
-var defaultEventData = <EventData>[
+List<EventData> defaultEventData = [
   EventData(200, 'Medley Relay', 8, true),
   EventData(200, 'Free', 8, false),
   EventData(200, 'IM', 8, false),
@@ -16,18 +16,18 @@ var defaultEventData = <EventData>[
   EventData(100, 'Breast', 8, false),
   EventData(400, 'Free Relay', 8, true)
 ];
-var defaultTeamList = <TeamData>[
+List<TeamData> defaultTeamList = [
   TeamData("Home"),
   TeamData("Away")
 ];
-var defaultScoringValues = <int>[8, 7, 6, 5, 4, 3, 2, 1];
+List<int> defaultScoringValues = [8, 7, 6, 5, 4, 3, 2, 1];
 List<EventData> eventDataList = [];
 List<TeamData> teamList = [];
 bool useDefaults = true;
 
 EventData currentEventData = defaultEventData[0];
 
-// ------END DEFAULT VALUES---------
+// END DEFAULTS
 
 void main() {
   runApp(const MyApp());
@@ -159,6 +159,14 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
 
+  final settingsTextController = TextEditingController();
+
+  @override
+  void dispose() {
+    settingsTextController.dispose();
+    super.dispose();
+  }
+
   void onClearPressed() {
     showDialog(
         context: context,
@@ -227,7 +235,7 @@ class _SettingsState extends State<Settings> {
               ),
               TextButton(
                   onPressed: () {
-                    clearData();
+                    //clearData();
                     resetData();
                     Navigator .of(context).pop();
                   },
@@ -240,8 +248,24 @@ class _SettingsState extends State<Settings> {
   }
 
   void resetData() {
-    eventDataList = defaultEventData;
-    teamList = defaultTeamList;
+    print(eventDataList);
+    print(defaultEventData);
+    eventDataList.clear();
+    /*for (EventData ed in defaultEventData) {
+      eventDataList.add(ed);
+    }*/
+    eventDataList = [];
+    eventDataList.addAll(defaultEventData);
+    print(eventDataList);
+    print(teamList);
+    print(defaultTeamList);
+    teamList.clear();
+    /*for (TeamData td in defaultTeamList) {
+      teamList.add(td);
+    }*/
+    teamList = [];
+    teamList.addAll(defaultTeamList);
+    print(teamList);
     for (EventData ed in eventDataList) {
       ed.placesValues = defaultScoringValues;
     }
@@ -255,10 +279,45 @@ class _SettingsState extends State<Settings> {
     showDialog(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-
-          );
-        });
+          if (addEditRemove == 1) {
+            return AlertDialog(
+                title: Text("Add Team", textAlign: TextAlign.center),
+                content: TextFormField(
+                      controller: settingsTextController,
+                      decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: 'Enter a team name'
+                      ),
+                    ),
+                actions: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator .of(context).pop();
+                          },
+                          child: const Text("Cancel")
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            Navigator .of(context).pop();
+                            teamList.add(TeamData(settingsTextController.text));
+                          },
+                          child: const Text("Submit")
+                      )
+                ]
+            );
+          }
+          else if (addEditRemove == 2) {
+            return AlertDialog(
+                title: Text("Edit Team", textAlign: TextAlign.center,)
+            );
+          }
+          else {
+            return AlertDialog(
+                title: Text("Remove Team", textAlign: TextAlign.center,)
+            );
+          }
+        }
+    );
   }
 
   void showCredits() {
@@ -521,6 +580,11 @@ class _PlaceListState extends State<PlaceList> {
   }
 
   void onTeamPressed(int placeIndex, int teamIndex) {
+    for (TeamData td in teamList) {
+      print (td.name);
+    }
+    print ("Team index: " + teamIndex.toString());
+    print ("Place index: " + placeIndex.toString());
     currentEventData.placeTeams[placeIndex-1] = teamList[teamIndex];
     teamList[teamIndex].score += currentEventData.placesValues[placeIndex-1];
     Navigator .of(context, rootNavigator: true).pop();
