@@ -197,8 +197,8 @@ class _SettingsState extends State<Settings> {
             content: SingleChildScrollView(
               child: ListBody(
                 children: const [
-                  Text("Are you sure you want to reset all data to their defaults?"),
-                  Text("This will delete custom teams and events. Scoring data will also be cleared.")
+                  Text("Are you sure you want to reset teams and events to their defaults?"),
+                  Text("This will delete custom teams and events.")
                 ],
               ),
             ),
@@ -211,7 +211,6 @@ class _SettingsState extends State<Settings> {
               ),
               TextButton(
                   onPressed: () {
-                    //clearData();
                     resetData();
                     Navigator .of(context).pop();
                   },
