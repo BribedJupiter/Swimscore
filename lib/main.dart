@@ -306,7 +306,60 @@ class _SettingsState extends State<Settings> {
             return AlertDialog();
           }
           else {
-            return AlertDialog();
+            return AlertDialog(
+              title: const Text("Remove Event", textAlign: TextAlign.center,),
+              content: Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextFormField(
+                      controller: settingsTextController,
+                      decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: "Enter a stroke to remove"
+                      ),
+                    ),
+                    TextFormField(
+                      controller: settingsTextControllerTwo,
+                      decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: "Enter a distance to remove (no units)"
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator .of(context).pop();
+                    },
+                    child: Text("Cancel")
+                ),
+                TextButton(
+                    onPressed: () {
+                      bool found = false;
+                      EventData? toRemove;
+                      for (EventData ed in g.eventDataList) {
+                        if ((ed.name.toLowerCase() == settingsTextController.text.toLowerCase()) && (int.parse(settingsTextControllerTwo.text) == ed.distance)) { //TODO: Check for parseint errors
+                          toRemove = ed;
+                          found = true;
+                        }
+                      }
+                      if (found) { //TODO: Check for duplicates
+                        g.eventDataList.remove(toRemove); //TODO: Implement place & relay
+                        Navigator .of(context).pop();
+                      } else {
+                        Navigator .of(context).pop();
+                        wariningAlert("Event remove failed. Must enter both a stroke and distance. ");
+                      }
+                    },
+                    child: Text("Submit")
+                ),
+              ],
+            );
           }
         });
   }
