@@ -141,11 +141,15 @@ class _SettingsState extends State<Settings> {
 
   final settingsTextController = TextEditingController();
   final settingsTextControllerTwo = TextEditingController();
+  final settingsTextControllerThree = TextEditingController();
+  final settingsTextControllerFour = TextEditingController();
 
   @override
   void dispose() {
     settingsTextController.dispose();
     settingsTextControllerTwo.dispose();
+    settingsTextControllerThree.dispose();
+    settingsTextControllerFour.dispose();
     super.dispose();
   }
 
@@ -303,7 +307,75 @@ class _SettingsState extends State<Settings> {
             );
           }
           else if (addEditRemove == 2) {
-            return AlertDialog();
+            return AlertDialog(
+              title: const Text("Edit Event", textAlign: TextAlign.center,),
+              content: Container(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextFormField(
+                      controller: settingsTextController,
+                      decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: "Enter the stroke to edit"
+                      ),
+                    ),
+                    TextFormField(
+                      controller: settingsTextControllerTwo,
+                      decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: "Enter the distance to edit (no units)"
+                      ),
+                    ),
+                    TextFormField(
+                      controller: settingsTextControllerThree,
+                      decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: "Enter the new stroke"
+                      ),
+                    ),
+                    TextFormField(
+                      controller: settingsTextControllerFour,
+                      decoration: const InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: "Enter the new distance (no units)"
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator .of(context).pop();
+                    },
+                    child: Text("Cancel")
+                ),
+                TextButton(
+                    onPressed: () {
+                      bool found = false;
+                      EventData? toChange;
+                      for (EventData ed in g.eventDataList) {
+                        if ((ed.name.toLowerCase() == settingsTextController.text.toLowerCase()) && (int.parse(settingsTextControllerTwo.text) == ed.distance)) { //TODO: Check for parseint errors
+                          found = true;
+                          toChange = ed;
+                        }
+                      }
+                      if (settingsTextController.text.isNotEmpty && settingsTextControllerTwo.text.isNotEmpty && settingsTextControllerThree.text.isNotEmpty && settingsTextControllerFour.text.isNotEmpty && found) { //TODO: Check for duplicates
+                        toChange?.name = settingsTextControllerThree.text; //TODO: Implement place & relay
+                        toChange?.distance = int.parse(settingsTextControllerFour.text); //TODO: Reset defaults keeps edited events
+                        Navigator .of(context).pop();
+                      } else {
+                        Navigator .of(context).pop();
+                        wariningAlert("Event add failed. Must enter both a stroke and distance for both the old and new event.");
+                      }
+                    },
+                    child: Text("Submit")
+                ),
+              ],
+            );
           }
           else {
             return AlertDialog(
