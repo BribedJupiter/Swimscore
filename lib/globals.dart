@@ -1,4 +1,4 @@
-library swim_score.classes;
+library swim_score.globals;
 
 import 'classes.dart';
 
