@@ -1,16 +1,22 @@
+// Flutter and other packages
 import 'package:flutter/material.dart';
-import 'globals.dart' as g;
-import 'classes.dart';
-import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart' as path; //TODO: Causes issues with context no idea why
 import 'package:sqflite/sqflite.dart';
 
+// Dart packages
+import 'dart:async';
 
+// Custom imports
+import 'globals.dart' as g;
+import 'classes.dart';
+
+// Start of program
 void main() {
   runApp(const MyApp());
 }
 
+// Base class
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -54,6 +60,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// Base screen and App bar
 class EventPage extends StatefulWidget {
   const EventPage({super.key, required this.title});
 
@@ -135,6 +142,7 @@ class _EventState extends State<EventPage> {
   }
 }
 
+// Settings screen
 class Settings extends StatefulWidget {
   const Settings({super.key});
 
@@ -763,6 +771,7 @@ class _SettingsState extends State<Settings> {
   }
 }
 
+// Team screen TODO: Rename to score screen?
 class Teams extends StatefulWidget {
   const Teams({super.key});
 
@@ -799,6 +808,7 @@ class _TeamsState extends State<Teams> {
   }
 }
 
+// Visualizer screen
 class Visualizer extends StatefulWidget {
   const Visualizer({super.key});
 
@@ -813,6 +823,7 @@ class _VisualizerState extends State<Visualizer> {
   }
 }
 
+// Event screen
 class EventList extends StatefulWidget {
   const EventList({super.key, required this.title});
 
@@ -844,6 +855,7 @@ class _EventListState extends State<EventList> {
   }
 }
 
+// Places sceen - subscreen of event screen
 class PlaceList extends StatefulWidget {
   const PlaceList({super.key});
 
